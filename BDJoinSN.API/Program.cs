@@ -2,6 +2,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddHealthChecks();
+
+builder.Services.AddCors(op =>
+    op.AddPolicy("CorsPolicy",
+    policy =>
+    {
+        policy.WithOrigins()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    }));
+
+
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -13,6 +25,10 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.MapHealthChecks("/healthz");
+
+app.UseCors();
 
 app.UseAuthorization();
 
