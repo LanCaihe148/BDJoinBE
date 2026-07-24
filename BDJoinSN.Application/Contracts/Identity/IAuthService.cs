@@ -1,4 +1,5 @@
 ﻿using BDJoinSN.Application.Models.Identity;
+using BDJoinSN.Application.Models.Pagination;
 
 namespace BDJoinSN.Application.Contracts.Identity
 {
@@ -7,5 +8,7 @@ namespace BDJoinSN.Application.Contracts.Identity
         Task<AuthResponse> Login(AuthRequest request);
 
         Task<RegistrationResponse> Register(RegistrationRequest request);
+
+        
     }
 }

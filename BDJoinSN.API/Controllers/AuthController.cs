@@ -1,12 +1,12 @@
-﻿using BDJoinSN.Application.Contracts;
-using BDJoinSN.Application.Contracts.Identity;
+﻿using BDJoinSN.Application.Contracts.Identity;
+using BDJoinSN.Application.Contracts.Persistance;
 using BDJoinSN.Application.Models.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BDJoinSN.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("Api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -35,7 +35,8 @@ namespace BDJoinSN.API.Controllers
             await _profileCreationService.CreateProfileAsync(
                 response.UserId,
                 request.Name,
-                request.Lastname
+                request.Lastname,
+                request.DisplayName
             );
             return Ok(response);
         }

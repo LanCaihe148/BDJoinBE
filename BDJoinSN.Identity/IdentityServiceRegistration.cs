@@ -24,7 +24,15 @@ namespace BDJoinSN.Identity
 
             services.AddDbContext<BDJoinSNIdentityDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnectionString"),
                 b => b.MigrationsAssembly(typeof(BDJoinSNIdentityDbContext).Assembly.FullName)));
-            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<BDJoinSNIdentityDbContext>().AddDefaultTokenProviders();
+            services.AddIdentity<ApplicationUser, IdentityRole>(op =>
+            {
+                op.Password.RequireUppercase = false;
+                op.Password.RequireLowercase = false;
+                op.Password.RequireDigit = false;
+                op.Password.RequireNonAlphanumeric = false;
+                op.Password.RequiredLength = 8; 
+                op.Password.RequiredUniqueChars = 1;
+            }).AddEntityFrameworkStores<BDJoinSNIdentityDbContext>().AddDefaultTokenProviders();
 
             services.AddTransient<IAuthService, AuthService>();
 

@@ -33,6 +33,18 @@ namespace BDJoinSN.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("ReceiverId")
                         .IsRequired()
                         .HasColumnType("character varying(450)");
@@ -57,6 +69,48 @@ namespace BDJoinSN.Infrastructure.Migrations
                     b.ToTable("FriendRequests");
                 });
 
+            modelBuilder.Entity("BDJoinSN.Domain.Post", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Author")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedDate");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Posts");
+                });
+
             modelBuilder.Entity("BDJoinSN.Domain.UserProfile", b =>
                 {
                     b.Property<string>("Id")
@@ -66,11 +120,26 @@ namespace BDJoinSN.Infrastructure.Migrations
                     b.Property<string>("Biography")
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("Birthday")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DisplayName")
                         .HasColumnType("text");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastName")
                         .HasColumnType("text");
@@ -86,9 +155,6 @@ namespace BDJoinSN.Infrastructure.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Website")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -112,6 +178,15 @@ namespace BDJoinSN.Infrastructure.Migrations
                     b.Navigation("Receiver");
 
                     b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("BDJoinSN.Domain.Post", b =>
+                {
+                    b.HasOne("BDJoinSN.Domain.UserProfile", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BDJoinSN.Domain.UserProfile", b =>

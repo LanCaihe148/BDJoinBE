@@ -2,6 +2,7 @@
 using BDJoinSN.Application.Contracts.Identity;
 using BDJoinSN.Application.Exceptions;
 using BDJoinSN.Application.Models.Identity;
+using BDJoinSN.Application.Models.Pagination;
 using BDJoinSN.Domain;
 using BDJoinSN.Identity.Models;
 using Microsoft.AspNetCore.Identity;
@@ -76,6 +77,10 @@ namespace BDJoinSN.Identity.Services
 
         public async Task<RegistrationResponse> Register(RegistrationRequest request)
         {
+            if (string.IsNullOrEmpty(request.RepeatPassword)){
+                _logger.LogWarning($"Intento de registro sin repetir contraseña");
+                throw new BadRequestException("Debe de repetir la contraseña");
+            }
             if (request.Password != request.RepeatPassword)
             {
                 _logger.LogWarning($"Intento de registro con contraseñas diferentes: {request.Email}");
@@ -100,6 +105,7 @@ namespace BDJoinSN.Identity.Services
                 Name = request.Name,
                 LastName = request.Lastname,
                 UserName = request.Username,
+                DisplayName = $"{request.Name} {request.Lastname}",
                 EmailConfirmed = true
             };
 
@@ -114,11 +120,10 @@ namespace BDJoinSN.Identity.Services
             
 
             await _userManager.AddToRoleAsync(user, "AuthUser");
-            var token = await GenerateToken(user);
+            
             return new RegistrationResponse
             {
                 Email = user.Email,
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
                 UserId = user.Id,
                 Username = user.UserName
             };
@@ -160,6 +165,7 @@ namespace BDJoinSN.Identity.Services
             return jwtSecurityToken;
         }
 
+
         private bool IsValidEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email)) return false;
@@ -174,5 +180,7 @@ namespace BDJoinSN.Identity.Services
                 return false;
             }
         }
+
+        
     }
 }

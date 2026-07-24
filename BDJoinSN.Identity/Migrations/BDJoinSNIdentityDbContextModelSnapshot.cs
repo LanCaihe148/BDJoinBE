@@ -34,11 +34,20 @@ namespace BDJoinSN.Identity.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("text");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("LastName")
@@ -72,6 +81,9 @@ namespace BDJoinSN.Identity.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("ProfileImageUrl")
+                        .HasColumnType("text");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -101,6 +113,7 @@ namespace BDJoinSN.Identity.Migrations
                             ConcurrencyStamp = "b2c3d4e5-f6a7-8901-bcde-f12345678901",
                             Email = "sandovalherest@gmail.com",
                             EmailConfirmed = true,
+                            IsDeleted = false,
                             LastName = "Sandoval",
                             LockoutEnabled = false,
                             Name = "Efrain",
@@ -119,6 +132,7 @@ namespace BDJoinSN.Identity.Migrations
                             ConcurrencyStamp = "e4ee65a4-d2e6-4624-acfb-c33230b36681",
                             Email = "israelsandoval@gmail.com",
                             EmailConfirmed = true,
+                            IsDeleted = false,
                             LastName = "Sandoval",
                             LockoutEnabled = false,
                             Name = "Israel",

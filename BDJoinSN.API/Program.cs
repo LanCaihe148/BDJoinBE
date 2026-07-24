@@ -1,5 +1,7 @@
 using BDJoinSN.API.Extensions;
-using BDJoinSN.Application.Contracts;
+using BDJoinSN.API.Middleware;
+using BDJoinSN.Application;
+using BDJoinSN.Application.Contracts.Persistance;
 using BDJoinSN.Identity;
 using BDJoinSN.Infrastructure;
 using BDJoinSN.Infrastructure.Repositories;
@@ -10,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHealthChecks();
 
+builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.ConfigureIdentityServices(builder.Configuration);
 builder.Services.AddScoped<IProfileCreationService, ProfileCreationService>();
@@ -37,6 +40,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseSwaggerServices();
 
 app.MapHealthChecks("/healthz");

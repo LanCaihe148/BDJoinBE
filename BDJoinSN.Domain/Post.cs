@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BDJoinSN.Domain.Common;
 
 namespace BDJoinSN.Domain
 {
-    internal class Post
+    public class Post : BaseDomainModel<int>
     {
+        public string UserId { get; set; } = string.Empty;
+        public string? Author { get; set; }
+        public string? Content { get; set; }
+
     }
 }

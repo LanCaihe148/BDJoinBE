@@ -12,6 +12,7 @@ namespace BDJoinSN.Infrastructure.Persistance
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<FriendRequest> FriendRequests { get; set; }
 
+        public DbSet<Post> Posts { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -38,6 +39,34 @@ namespace BDJoinSN.Infrastructure.Persistance
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasIndex(fr => new { fr.SenderId, fr.ReceiverId }).IsUnique();
+
+
+            });
+
+            builder.Entity<Post>(entity =>
+            {
+                entity.HasKey(p => p.Id);
+
+                entity.Property(p => p.UserId)
+                    .IsRequired()
+                    .HasMaxLength(450);
+
+                entity.Property(p => p.Author)
+                    .HasMaxLength(200);
+
+                entity.Property(p => p.Content)
+                    .IsRequired()
+                    .HasColumnType("text");
+
+                
+                entity.HasIndex(p => p.UserId);
+                entity.HasIndex(p => p.CreatedDate);
+
+                 
+                 entity.HasOne<UserProfile>()
+                     .WithMany()
+                     .HasForeignKey(p => p.UserId)
+                     .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

@@ -38,13 +38,13 @@ namespace BDJoinSN.Infrastructure.Repositories
                 Email = user.Email ?? string.Empty,
                 Name = profile?.Name,
                 LastName = profile?.LastName,
-           
+                Biography = profile?.Biography,
+                Birthday = profile?.Birthday,
                 ProfileImageUrl = profile?.ProfileImageUrl,
                 CreatedAt = profile?.CreatedAt ?? DateTime.UtcNow
             };
         }
 
-        // 2. Perfil público (sin credenciales)
         public async Task<PublicProfileResponse> GetPublicProfileAsync(string username, string? currentUserId = null)
         {
             var user = await _userManager.FindByNameAsync(username);
@@ -54,7 +54,6 @@ namespace BDJoinSN.Infrastructure.Repositories
             var profile = await _appDbContext.UserProfiles
                 .FirstOrDefaultAsync(up => up.Id == user.Id);
 
-            // Calcular amigos
             var friends = await _appDbContext.FriendRequests
                 .Where(fr =>
                     (fr.SenderId == user.Id || fr.ReceiverId == user.Id) &&
@@ -73,7 +72,6 @@ namespace BDJoinSN.Infrastructure.Repositories
                 })
                 .ToList();
 
-            // Estado de relación
             RelationshipStatus? relationship = null;
             if (!string.IsNullOrEmpty(currentUserId) && currentUserId != user.Id)
             {
@@ -83,11 +81,11 @@ namespace BDJoinSN.Infrastructure.Repositories
                         (fr.SenderId == user.Id && fr.ReceiverId == currentUserId));
 
                 if (existingRequest == null)
-                    relationship = RelationshipStatus.NotFriends;
+                    relationship = RelationshipStatus.None;
                 else if (existingRequest.Status == FriendRequestStatus.Pending)
                     relationship = existingRequest.SenderId == currentUserId
-                        ? RelationshipStatus.FriendRequestSent
-                        : RelationshipStatus.FriendRequestReceived;
+                        ? RelationshipStatus.PendingSent
+                        : RelationshipStatus.PendingReceived;
                 else if (existingRequest.Status == FriendRequestStatus.Accepted)
                     relationship = RelationshipStatus.Friends;
             }
@@ -97,7 +95,7 @@ namespace BDJoinSN.Infrastructure.Repositories
                 UserName = user.UserName ?? string.Empty,
                 Name = profile?.Name,
                 LastName = profile?.LastName,
-
+                Biography = profile?.Biography,
                 ProfileImageUrl = profile?.ProfileImageUrl,
                 FriendsCount = friendsCount,
                 RecentFriends = recentFriends,

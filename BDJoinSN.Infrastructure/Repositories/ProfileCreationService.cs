@@ -1,4 +1,4 @@
-﻿using BDJoinSN.Application.Contracts;
+﻿using BDJoinSN.Application.Contracts.Persistance;
 using BDJoinSN.Domain;
 using BDJoinSN.Infrastructure.Persistance;
 
@@ -13,13 +13,14 @@ namespace BDJoinSN.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task CreateProfileAsync(string userId, string name, string lastName)
+        public async Task CreateProfileAsync(string userId, string name, string lastName, string displayName)
         {
             var profile = new UserProfile
             {
                 Id = userId,
                 Name = name,
                 LastName = lastName,
+                DisplayName= $"{name} {lastName}",
                 CreatedAt = DateTime.UtcNow
             };
 

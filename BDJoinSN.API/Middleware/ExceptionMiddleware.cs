@@ -29,38 +29,42 @@ namespace BDJoinSN.API.Middleware
             {
                 _logger.LogError(ex, ex.Message);
                 context.Response.ContentType = "application/json";
-                var StatusCode = (int)HttpStatusCode.InternalServerError;
-                var result = string.Empty;
+
+                var statusCode = (int)HttpStatusCode.InternalServerError;
+                var message = "Ocurrió un error interno. Intenta de nuevo más tarde.";
+                string? details = null;
 
                 switch (ex)
                 {
-                    case NotFoundException notFoundException:
-                        StatusCode = (int)HttpStatusCode.NotFound;
+                    case NotFoundException:
+                        statusCode = (int)HttpStatusCode.NotFound;
+                        message = ex.Message;
                         break;
 
                     case ValidationException validationException:
-                        StatusCode = (int)HttpStatusCode.BadRequest;
-                        var validationJson = JsonConvert.SerializeObject(validationException.Errors);
-                        result = JsonConvert.SerializeObject(new CodeErrorException(StatusCode, ex.Message, validationJson));
+                        statusCode = (int)HttpStatusCode.BadRequest;
+                        message = ex.Message;
+                        details = JsonConvert.SerializeObject(validationException.Errors);
                         break;
 
-                    case BadRequestException badRequestException:
-                        StatusCode = (int)HttpStatusCode.BadRequest;
+                    case BadRequestException:
+                        statusCode = (int)HttpStatusCode.BadRequest;
+                        message = ex.Message; 
                         break;
 
                     default:
+                        
+                        if (_env.IsDevelopment())
+                        {
+                            message = ex.Message;
+                            details = ex.StackTrace;
+                        }
                         break;
                 }
 
-                if (string.IsNullOrEmpty(result))
-                {
-                    result = JsonConvert.SerializeObject(new CodeErrorException(StatusCode, ex.Message, ex.StackTrace));
+                var result = JsonConvert.SerializeObject(new CodeErrorException(statusCode, message, details));
 
-                }
-
-
-                context.Response.StatusCode = StatusCode;
-
+                context.Response.StatusCode = statusCode;
                 await context.Response.WriteAsync(result);
             }
         }

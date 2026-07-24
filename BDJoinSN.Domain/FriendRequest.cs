@@ -1,9 +1,10 @@
 ﻿
+using BDJoinSN.Domain.Common;
+
 namespace BDJoinSN.Domain
 {
-    public class FriendRequest
+    public class FriendRequest : BaseDomainModel<int>
     {
-        public int Id { get; set; }
         public string SenderId { get; set; } = string.Empty; 
         public string ReceiverId { get; set; } = string.Empty; 
         public FriendRequestStatus Status { get; set; }
