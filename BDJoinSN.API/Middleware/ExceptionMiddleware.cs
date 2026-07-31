@@ -1,6 +1,7 @@
 ﻿using BDJoinSN.API.Errors;
 using BDJoinSN.Application.Exceptions;
 using Newtonsoft.Json;
+using System;
 using System.Net;
 
 namespace BDJoinSN.API.Middleware
@@ -33,6 +34,14 @@ namespace BDJoinSN.API.Middleware
                 var statusCode = (int)HttpStatusCode.InternalServerError;
                 var message = "Ocurrió un error interno. Intenta de nuevo más tarde.";
                 string? details = null;
+                //var errorResponse = new
+                //{
+                //    success = false,
+                //    statusCode = 500,
+                //    error = "Error interno del servidor",
+                //    details = exception.Message,
+                //    timestamp = DateTime.UtcNow
+                //};
 
                 switch (ex)
                 {
@@ -51,6 +60,18 @@ namespace BDJoinSN.API.Middleware
                         statusCode = (int)HttpStatusCode.BadRequest;
                         message = ex.Message; 
                         break;
+
+                    //case ForbiddenException forbiddenEx:
+                    //    statusCode = (int)HttpStatusCode.Forbidden;
+                    //    errorResponse = new
+                    //    {
+                    //        success = false,
+                    //        statusCode = 403,
+                    //        error = "Acceso denegado",
+                    //        details = forbiddenEx.Message,
+                    //        timestamp = DateTime.UtcNow
+                    //    };
+                    //    break;
 
                     default:
                         

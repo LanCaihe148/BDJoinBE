@@ -6,6 +6,8 @@ namespace BDJoinSN.Domain
     {
         public string? Name { get; set; }
         public string? LastName { get; set; }
+
+        public string? UserName { get; set; }
         public string? Biography { get; set; }
         public string? ProfileImageUrl { get; set; }
         public string? DisplayName { get; set; }

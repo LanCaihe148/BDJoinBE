@@ -1,5 +1,6 @@
 ﻿using BDJoinSN.Application.Constans;
 using BDJoinSN.Application.Contracts.Identity;
+using BDJoinSN.Application.Contracts.Persistance;
 using BDJoinSN.Application.Exceptions;
 using BDJoinSN.Application.Models.Identity;
 using BDJoinSN.Application.Models.Pagination;
@@ -21,16 +22,17 @@ namespace BDJoinSN.Identity.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IProfileCreationService _profileCreationService;
         private readonly JwtSettings _jwtSettings;
         private readonly ILogger<AuthService> _logger;
-        
-        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<JwtSettings> jwtSettings, ILogger<AuthService> logger)
+
+        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IProfileCreationService profileCreationService, IOptions<JwtSettings> jwtSettings, ILogger<AuthService> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _profileCreationService = profileCreationService;
             _jwtSettings = jwtSettings.Value;
             _logger = logger;
-            
         }
 
         public async Task<AuthResponse> Login(AuthRequest request)
@@ -120,7 +122,15 @@ namespace BDJoinSN.Identity.Services
             
 
             await _userManager.AddToRoleAsync(user, "AuthUser");
-            
+
+            await _profileCreationService.CreateProfileAsync(
+               user.Id,
+               request.Name,
+               request.Lastname,
+               $"{request.Name} {request.Lastname}", 
+               request.Username
+           );
+
             return new RegistrationResponse
             {
                 Email = user.Email,
@@ -147,7 +157,7 @@ namespace BDJoinSN.Identity.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(CustomClaimTypes.Uid, user.Id)
+                new Claim(CustomClaimTypes.Uid, user.Id),
             }.Union(userClaims).Union(roleClaims);
 
             var symmetricSecurity = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));

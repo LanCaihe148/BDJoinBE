@@ -7,8 +7,12 @@ namespace BDJoinSN.Application.Contracts.Persistance
     {
         Task<bool> HasPendingRequestAsync(string senderId, string receiverId);
         Task<bool> AreFriendsAsync(string userId1, string userId2);
+        Task<FriendRequest?> GetByIdAsnc(int id);
         Task<IReadOnlyList<FriendRequest>> GetPendingRequestsForUserAsync(string userId);
+        Task<FriendRequest?> GetAcceptedFriendRequestAsync(string userId1, string userId2);
+        Task<IReadOnlyList<FriendRequest>> GetAllFriendsAsync(string userId);
         void AddFriendRequest(FriendRequest friendRequest);
-
+        void UpdateFR(FriendRequest friendRequest);
+        void DeleteFR(FriendRequest friendRequest);
     }
 }

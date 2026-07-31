@@ -12,7 +12,7 @@ using System.Security.Claims;
 namespace BDJoinSN.API.Controllers
 {
     [ApiController]
-    [Route("api/[Controller]")]
+    [Route("Api/[Controller]")]
     [Authorize]
     public class UsersController : ControllerBase
     {
@@ -26,6 +26,7 @@ namespace BDJoinSN.API.Controllers
             _profileService = profileService;
             _logger = logger;
         }
+
 
         [HttpGet("search")]
         [ProducesResponseType(typeof(PaginatedResult<UserSearchResult>), StatusCodes.Status200OK)]

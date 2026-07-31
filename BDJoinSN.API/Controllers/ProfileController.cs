@@ -9,7 +9,7 @@ using System.Security.Claims;
 namespace BDJoinSN.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("Api/[controller]")]
     
     public class ProfileController : ControllerBase
     {

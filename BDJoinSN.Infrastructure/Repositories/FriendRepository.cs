@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BDJoinSN.Infrastructure.Repositories
 {
-    public class FriendRepository : RepositoryBase<FriendRequest,int> ,IFriendRepository
+    public class FriendRepository : RepositoryBase<FriendRequest, int>, IFriendRepository
     {
         public FriendRepository(BDJoinDbContext context) : base(context)
         {
@@ -41,6 +41,43 @@ namespace BDJoinSN.Infrastructure.Repositories
         public void AddFriendRequest(FriendRequest friendRequest)
         {
             _context.Set<FriendRequest>().Add(friendRequest);
+        }
+
+        public void UpdateFR(FriendRequest friendRequest)
+        {
+            _context.FriendRequests.Update(friendRequest);
+        }
+
+        public async Task<FriendRequest?> GetByIdAsnc(int id)
+        {
+            return await _context.FriendRequests
+               .FirstOrDefaultAsync(fr => fr.Id == id);
+        }
+
+        public async Task<FriendRequest?> GetAcceptedFriendRequestAsync(string userId1, string userId2)
+        {
+            return await _context.FriendRequests
+                .FirstOrDefaultAsync(fr =>
+                    ((fr.SenderId == userId1 && fr.ReceiverId == userId2) ||
+                     (fr.SenderId == userId2 && fr.ReceiverId == userId1)) &&
+                    fr.Status == FriendRequestStatus.Accepted);
+        }
+
+
+        public async Task<IReadOnlyList<FriendRequest>> GetAllFriendsAsync(string userId)
+        {
+            return await _context.FriendRequests
+                .Where(fr =>
+                    (fr.SenderId == userId || fr.ReceiverId == userId) &&
+                    fr.Status == FriendRequestStatus.Accepted)
+                .Include(fr => fr.Sender)
+                .Include(fr => fr.Receiver)
+                .ToListAsync();
+        }
+
+        public void DeleteFR(FriendRequest friendRequest)
+        {
+            _context.FriendRequests.Remove(friendRequest);
         }
     }
 }

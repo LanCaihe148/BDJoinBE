@@ -2,6 +2,6 @@
 {
     public interface IProfileCreationService
     {
-        public Task CreateProfileAsync(string userId, string name, string lastName, string displayName);
+        public Task CreateProfileAsync(string userId, string name, string lastName, string displayName ,string userName);
     }
 }
