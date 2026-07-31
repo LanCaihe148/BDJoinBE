@@ -101,7 +101,7 @@ namespace BDJoinSN.API.Controllers
         
         }
 
-        [HttpPost("change-password")]
+        [HttpPost("Change-password")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

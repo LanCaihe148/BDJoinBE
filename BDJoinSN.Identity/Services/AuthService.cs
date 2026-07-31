@@ -115,9 +115,13 @@ namespace BDJoinSN.Identity.Services
             var result = await _userManager.CreateAsync(user, request.Password);
 
             if(!result.Succeeded){
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                _logger.LogError($"Error al crear usuario : {errors}");
-                throw new Exception($"Error al crear el usuario: {errors}");
+                var errors = result.Errors.Select(e => e.Description);
+                var errorMessage = string.Join("; ", errors);
+
+                _logger.LogWarning($"Error al crear usuario: {errorMessage}");
+
+                
+                throw new BadRequestException($"Error al registrar usuario: {errorMessage}");
             }
             
 
