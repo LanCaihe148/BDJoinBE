@@ -14,7 +14,7 @@ namespace BDJoinSN.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task CreateProfileAsync(string userId, string name, string lastName, string displayName, string userName)
+        public async Task CreateProfileAsync(string userId, string name, string lastName, string displayName, string userName, string biography)
         {
             var existingProfile = await _context.UserProfiles
        .FirstOrDefaultAsync(p => p.Id == userId);
@@ -41,6 +41,7 @@ namespace BDJoinSN.Infrastructure.Repositories
                 LastName = lastName,
                 UserName = userName,
                 DisplayName = displayName ?? $"{name} {lastName}",
+                Biography = biography,
                 CreatedAt = DateTime.UtcNow
             };
 

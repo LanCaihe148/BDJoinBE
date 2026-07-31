@@ -128,14 +128,16 @@ namespace BDJoinSN.Identity.Services
                request.Name,
                request.Lastname,
                $"{request.Name} {request.Lastname}", 
-               request.Username
+               request.Username,
+               request.Biography
            );
 
             return new RegistrationResponse
             {
                 Email = user.Email,
                 UserId = user.Id,
-                Username = user.UserName
+                Username = user.UserName,
+                DisplayName = user.DisplayName
             };
 
         }
