@@ -42,7 +42,7 @@ namespace BDJoinSN.Identity
             }).AddEntityFrameworkStores<BDJoinSNIdentityDbContext>().AddDefaultTokenProviders();
 
             services.AddTransient<IAuthService, AuthService>();
-
+            services.AddScoped<IUserUpdateService, UserUpdateService>();
             services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
             services.AddAuthentication(options =>
             {

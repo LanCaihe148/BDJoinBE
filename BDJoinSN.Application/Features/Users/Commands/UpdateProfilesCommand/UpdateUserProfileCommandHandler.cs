@@ -1,49 +1,72 @@
 ﻿using AutoMapper;
+using BDJoinSN.Application.Contracts.Identity;
 using BDJoinSN.Application.Contracts.Persistance;
 using BDJoinSN.Application.Exceptions;
-using BDJoinSN.Domain;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace BDJoinSN.Application.Features.Users.Commands.UpdateProfilesCommand
 {
-    public class UpdateUserProfileCommandHandler : IRequestHandler<UpdateUserProfileCommand, Unit>
+    public class UpdateUserProfileCommandHandler : IRequestHandler<UpdateUserProfileCommand, bool>
     {
-        private readonly IUnitOfWork _unitOfWork;
+         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IUserUpdateService _userUpdateService; 
         private readonly ILogger<UpdateUserProfileCommandHandler> _logger;
 
-        public UpdateUserProfileCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<UpdateUserProfileCommandHandler> logger)
+        public UpdateUserProfileCommandHandler(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IUserUpdateService userUpdateService,
+            ILogger<UpdateUserProfileCommandHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userUpdateService = userUpdateService;
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.UserId))
-                throw new BadRequestException("El UserId es requerido");
+            try
+            {
+                
+                if (string.IsNullOrEmpty(request.UserId))
+                    throw new BadRequestException("El ID del usuario es requerido.");
 
-            var profile = await _unitOfWork.ProfileRepository.GetByUserIdAsync(request.UserId);
+                
+                var profile = await _unitOfWork.ProfileRepository.GetByUserIdAsync(request.UserId);
+                if (profile == null)
+                    throw new NotFoundException("Perfil", request.UserId);
 
-            if (profile == null)
-                throw new NotFoundException(nameof(UserProfile), request.UserId);
+                
+                if (request.Birthday.HasValue)
+                    profile.Birthday = request.Birthday;
 
-            _mapper.Map(request, profile);
+                if (!string.IsNullOrEmpty(request.Biography))
+                    profile.Biography = request.Biography;
 
-            profile.UpdatedAt = DateTime.UtcNow;
-            profile.LastModifiedDate = DateTimeOffset.UtcNow;
-            profile.LastModifiedBy = request.UserId;
+                if (!string.IsNullOrEmpty(request.Location))
+                    profile.Location = request.Location;
 
-            var result = await _unitOfWork.Complete();
+                
 
-            if (result <= 0)
-                throw new Exception("No se pudo actualizar el perfil. No se guardaron cambios.");
+                profile.UpdatedAt = DateTime.UtcNow;
 
-            _logger.LogInformation("Perfil actualizado exitosamente para usuario {UserId}", request.UserId);
+                
+                _unitOfWork.ProfileRepository.UpdateEntity(profile);
+                await _unitOfWork.Complete();
+ 
 
-            return Unit.Value;
+                _logger.LogInformation($"Perfil del usuario {request.UserId} actualizado correctamente");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar perfil del usuario {UserId}", request.UserId);
+                throw;
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BDJoinSN.Application.Features.Users.Commands.UpdateProfilesCommand
 {
-    public class UpdateUserProfileCommand : IRequest<Unit>
+    public class UpdateUserProfileCommand : IRequest<bool>
     {
         public string? UserId { get; set; }
         public string? Name { get; set; }
