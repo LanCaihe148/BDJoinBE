@@ -34,51 +34,45 @@ namespace BDJoinSN.API.Middleware
                 var statusCode = (int)HttpStatusCode.InternalServerError;
                 var message = "Ocurrió un error interno. Intenta de nuevo más tarde.";
                 string? details = null;
-                //var errorResponse = new
-                //{
-                //    success = false,
-                //    statusCode = 500,
-                //    error = "Error interno del servidor",
-                //    details = exception.Message,
-                //    timestamp = DateTime.UtcNow
-                //};
 
                 switch (ex)
                 {
                     case NotFoundException:
-                        statusCode = (int)HttpStatusCode.NotFound;
+                        statusCode = (int)HttpStatusCode.NotFound; // 404
                         message = ex.Message;
                         break;
 
                     case ValidationException validationException:
-                        statusCode = (int)HttpStatusCode.BadRequest;
+                        statusCode = (int)HttpStatusCode.BadRequest; // 400
                         message = ex.Message;
                         details = JsonConvert.SerializeObject(validationException.Errors);
                         break;
 
                     case BadRequestException:
-                        statusCode = (int)HttpStatusCode.BadRequest;
-                        message = ex.Message; 
+                        statusCode = (int)HttpStatusCode.BadRequest; // 400
+                        message = ex.Message;
                         break;
 
-                    //case ForbiddenException forbiddenEx:
-                    //    statusCode = (int)HttpStatusCode.Forbidden;
-                    //    errorResponse = new
-                    //    {
-                    //        success = false,
-                    //        statusCode = 403,
-                    //        error = "Acceso denegado",
-                    //        details = forbiddenEx.Message,
-                    //        timestamp = DateTime.UtcNow
-                    //    };
-                    //    break;
+                    case ForbiddenException:
+                        statusCode = (int)HttpStatusCode.Forbidden; // 403
+                        message = ex.Message;
+                        break;
+
+                    case UnauthorizedAccessException:
+                        statusCode = (int)HttpStatusCode.Unauthorized; // 401
+                        message = ex.Message;
+                        break;
 
                     default:
-                        
+                        statusCode = (int)HttpStatusCode.InternalServerError; // 500
                         if (_env.IsDevelopment())
                         {
                             message = ex.Message;
                             details = ex.StackTrace;
+                        }
+                        else
+                        {
+                            message = "Ocurrió un error interno. Intenta de nuevo más tarde.";
                         }
                         break;
                 }
