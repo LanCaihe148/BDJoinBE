@@ -31,6 +31,22 @@ namespace BDJoinSN.Infrastructure.Repositories
             var profile = await _appDbContext.UserProfiles
                 .FirstOrDefaultAsync(up => up.Id == userId);
 
+            var friends = await _appDbContext.FriendRequests
+                .Where(fr =>
+                    (fr.SenderId == user.Id || fr.ReceiverId == user.Id) &&
+                    fr.Status == FriendRequestStatus.Accepted)
+                .Select(fr => fr.SenderId == user.Id ? fr.Receiver : fr.Sender)
+                .ToListAsync();
+
+            var recentFriends = friends
+                .Take(5)
+                .Select(f => new FriendSummaryResponse
+                {
+                    UserName = _userManager.FindByIdAsync(f.Id).Result?.UserName ?? string.Empty,
+                    Name = f.Name,
+                    ProfileImageUrl = f.ProfileImageUrl
+                })
+                .ToList();
             return new ProfileResponse
             {
                 UserId = user.Id,
@@ -42,6 +58,7 @@ namespace BDJoinSN.Infrastructure.Repositories
                 Birthday = profile?.Birthday,
                 City = profile?.Location,
                 ProfileImageUrl = profile?.ProfileImageUrl,
+                RecentFriends = recentFriends,
                 CreatedAt = profile?.CreatedAt ?? DateTime.UtcNow
             };
         }
