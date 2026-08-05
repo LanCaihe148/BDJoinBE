@@ -10,6 +10,15 @@ using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.ConfigureAppConfiguration((context, config) =>
+{
+    if (context.HostingEnvironment.IsProduction())
+    {
+        // Usa el método alternativo que no usa FileSystemWatcher
+        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+        config.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: false);
+    }
+});
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
@@ -76,7 +85,7 @@ else
 
 // Exception Middleware (SIEMPRE)
 app.UseMiddleware<ExceptionMiddleware>();
-
+app.UseMiddleware<TokenBlacklistMiddleware>();
 // Swagger Services
 app.UseSwaggerServices();
 
