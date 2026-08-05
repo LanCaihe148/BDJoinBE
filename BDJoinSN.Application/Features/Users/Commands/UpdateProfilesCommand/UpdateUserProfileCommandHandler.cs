@@ -30,26 +30,40 @@ namespace BDJoinSN.Application.Features.Users.Commands.UpdateProfilesCommand
         {
             try
             {
-                
+
                 if (string.IsNullOrEmpty(request.UserId))
                     throw new BadRequestException("El ID del usuario es requerido.");
 
-                
+
                 var profile = await _unitOfWork.ProfileRepository.GetByUserIdAsync(request.UserId);
                 if (profile == null)
                     throw new NotFoundException("Perfil", request.UserId);
 
-                
+
                 if (request.Birthday.HasValue)
+                {
                     profile.Birthday = request.Birthday;
+                }
 
                 if (!string.IsNullOrEmpty(request.Biography))
+                {
                     profile.Biography = request.Biography;
-
+                }
+                    
                 if (!string.IsNullOrEmpty(request.Location))
+                {
                     profile.Location = request.Location;
+                }
 
-                
+                if (!string.IsNullOrEmpty(request.ProfileImageUrl))
+                {
+                    profile.ProfileImageUrl = request.ProfileImageUrl;
+                }
+
+                if (!string.IsNullOrEmpty(request.Username))
+                {
+                    profile.UserName = request.Username;
+                }
 
                 profile.UpdatedAt = DateTime.UtcNow;
 
