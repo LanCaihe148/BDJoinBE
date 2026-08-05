@@ -61,19 +61,17 @@ namespace BDJoinSN.Identity.Repositories
             var query = _userManager.Users
                 .Where(u => u.Id != currentUserId);
 
-            
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 var term = $"%{searchTerm}%";
                 query = query.Where(u =>
-                    EF.Functions.Like(u.UserName, term) ||
-                    EF.Functions.Like(u.DisplayName, term) ||
-                    EF.Functions.Like(u.Name, term) ||
-                    EF.Functions.Like(u.LastName, term)
+                    EF.Functions.ILike(u.UserName, term) ||      
+                    EF.Functions.ILike(u.DisplayName, term) ||   
+                    EF.Functions.ILike(u.Name, term) ||          
+                    EF.Functions.ILike(u.LastName, term)         
                 );
             }
 
-            
             var totalCount = await query.CountAsync();
 
 
