@@ -60,11 +60,15 @@ namespace BDJoinSN.Application.Features.Users.Commands.UpdateProfilesCommand
                     profile.ProfileImageUrl = request.ProfileImageUrl;
                 }
 
-                if (!string.IsNullOrEmpty(request.Username))
+                if (!string.IsNullOrEmpty(request.Name))
                 {
-                    profile.UserName = request.Username;
+                    profile.Name = request.Name;
                 }
 
+                if (!string.IsNullOrEmpty(request.LastName))
+                {
+                    profile.LastName = request.LastName;
+                }
                 profile.UpdatedAt = DateTime.UtcNow;
 
                 
