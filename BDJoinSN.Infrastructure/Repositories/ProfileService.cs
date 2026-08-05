@@ -38,6 +38,7 @@ namespace BDJoinSN.Infrastructure.Repositories
                 .Select(fr => fr.SenderId == user.Id ? fr.Receiver : fr.Sender)
                 .ToListAsync();
 
+            var friendsCount = friends.Count;
             var recentFriends = friends
                 .Take(5)
                 .Select(f => new FriendSummaryResponse
@@ -57,6 +58,7 @@ namespace BDJoinSN.Infrastructure.Repositories
                 Biography = profile?.Biography,
                 Birthday = profile?.Birthday,
                 City = profile?.Location,
+                FriendsCount = friendsCount,
                 ProfileImageUrl = profile?.ProfileImageUrl,
                 RecentFriends = recentFriends,
                 CreatedAt = profile?.CreatedAt ?? DateTime.UtcNow
