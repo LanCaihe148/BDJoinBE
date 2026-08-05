@@ -63,13 +63,12 @@ namespace BDJoinSN.Identity.Repositories
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                var term = $"%{searchTerm}%";
+                var term = searchTerm.ToLowerInvariant();
                 query = query.Where(u =>
-                    EF.Functions.Like(u.UserName, term) ||
-                    EF.Functions.Like(u.DisplayName, term)
+                    (u.UserName != null && u.UserName.ToLowerInvariant().Contains(term)) ||
+                    (u.DisplayName != null && u.DisplayName.ToLowerInvariant().Contains(term))
                 );
             }
-
             var totalCount = await query.CountAsync();
 
             var users = await query
