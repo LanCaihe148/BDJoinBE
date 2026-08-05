@@ -57,15 +57,17 @@ namespace BDJoinSN.Identity.Repositories
             int pageIndex = 1,
             int pageSize = 10)
         {
-            
+
             var query = _userManager.Users
                 .Where(u => u.Id != currentUserId);
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
+                var term = $"%{searchTerm}%";
                 query = query.Where(u =>
-                    u.UserName!.Contains(searchTerm) ||
-                    (u.DisplayName != null && u.DisplayName.Contains(searchTerm)));
+                    EF.Functions.Like(u.UserName, term) ||
+                    EF.Functions.Like(u.DisplayName, term)
+                );
             }
 
             var totalCount = await query.CountAsync();
