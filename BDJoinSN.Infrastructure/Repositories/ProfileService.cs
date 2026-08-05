@@ -40,6 +40,7 @@ namespace BDJoinSN.Infrastructure.Repositories
                 LastName = profile?.LastName,
                 Biography = profile?.Biography,
                 Birthday = profile?.Birthday,
+                City = profile?.Location,
                 ProfileImageUrl = profile?.ProfileImageUrl,
                 CreatedAt = profile?.CreatedAt ?? DateTime.UtcNow
             };
@@ -96,6 +97,7 @@ namespace BDJoinSN.Infrastructure.Repositories
                 Name = profile?.Name,
                 LastName = profile?.LastName,
                 Biography = profile?.Biography,
+                City = profile?.Location,
                 ProfileImageUrl = profile?.ProfileImageUrl,
                 FriendsCount = friendsCount,
                 RecentFriends = recentFriends,
