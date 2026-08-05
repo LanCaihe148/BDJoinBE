@@ -3,7 +3,9 @@ using BDJoinSN.Application.Exceptions;
 using BDJoinSN.Application.Features.Posts.Commands.CreatePost;
 using BDJoinSN.Application.Features.Posts.Commands.DeletePost;
 using BDJoinSN.Application.Features.Posts.Commands.UpdatePost;
+using BDJoinSN.Application.Features.Posts.Queries.GetAllPostByUsername;
 using BDJoinSN.Application.Features.Posts.Queries.GetPostsById;
+using BDJoinSN.Application.Models.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -183,6 +185,48 @@ namespace BDJoinSN.API.Controllers
             {
                 _logger.LogError(ex, "Error al actualizar post {PostId}", id);
                 return StatusCode(500, new { error = "Error al actualizar el post" });
+            }
+        }
+
+        [HttpGet("user/{username}")]
+        [ProducesResponseType(typeof(PaginatedResult<PostDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PaginatedResult<PostDto>>> GetPostsByUsername(
+            string username,
+            [FromQuery] int pageIndex = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                
+                if (pageIndex < 1)
+                    return BadRequest(new { error = "pageIndex debe ser mayor o igual a 1" });
+
+                if (pageSize < 1 || pageSize > 50)
+                    return BadRequest(new { error = "pageSize debe estar entre 1 y 50" });
+
+                
+                var query = new GetAllPostByUsernameQuery
+                {
+                    Username = username,
+                    PageIndex = pageIndex,
+                    PageSize = pageSize
+                };
+
+                
+                var result = await _mediator.Send(query);
+
+                return Ok(result);
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(new { error = $"Usuario '{username}' no encontrado" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener posts del usuario {Username}", username);
+                return StatusCode(500, new { error = "Error al obtener los posts" });
             }
         }
 

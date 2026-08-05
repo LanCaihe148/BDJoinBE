@@ -12,5 +12,8 @@ namespace BDJoinSN.Application.Contracts.Persistance
 
         Task<int> GetFeedCountAsync(List<string> friendIds);
 
+        Task<List<Post>> GetAllPostByUsername(string username, int pageIndex, int pageSize);
+
+        Task<int> CountByUsernameAsync(string username);
     }
 }

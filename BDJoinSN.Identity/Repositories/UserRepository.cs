@@ -1,5 +1,6 @@
 ﻿
 using BDJoinSN.Application.Contracts.Persistance;
+using BDJoinSN.Application.Models;
 using BDJoinSN.Application.Models.Identity;
 using BDJoinSN.Application.Models.Pagination;
 using BDJoinSN.Identity.Models;
@@ -19,6 +20,35 @@ namespace BDJoinSN.Identity.Repositories
         {
             _userManager = userManager;
             _profileRepository = profileRepository;
+        }
+
+        public async Task<bool> ExistsByUsernameAsync(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            return user != null && !user.IsDeleted;
+        }
+
+        public async Task<UserDto?> GetByUsernameAsync(string username)
+        {
+            
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+                return null;
+
+            
+            var profile = await _profileRepository.GetByUserIdAsync(user.Id);
+
+            
+            return new UserDto
+            {
+                Id = user.Id,
+                Username = user.UserName ?? string.Empty,
+                DisplayName = profile?.DisplayName ?? user.DisplayName ?? user.UserName,
+                ProfileImageUrl = profile?.ProfileImageUrl ?? user.ProfileImageUrl,
+                Name = profile?.Name,
+                LastName = profile?.LastName,
+                IsDeleted = user.IsDeleted
+            };
         }
 
         public async Task<PaginatedResult<UserSearchResult>> SearchUsersAsync(

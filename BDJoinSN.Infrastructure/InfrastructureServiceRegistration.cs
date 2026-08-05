@@ -1,8 +1,10 @@
 ﻿using BDJoinSN.Application.Contracts.Identity;
 using BDJoinSN.Application.Contracts.Persistance;
+using BDJoinSN.Identity.Models;
 using BDJoinSN.Identity.Repositories;
 using BDJoinSN.Infrastructure.Persistance;
 using BDJoinSN.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,9 +18,16 @@ namespace BDJoinSN.Infrastructure
             services.AddDbContext<BDJoinDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("ConnectionString")));
 
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            //services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            
+            services.AddScoped<IUnitOfWork>(sp =>
+            {
+                var context = sp.GetRequiredService<BDJoinDbContext>();
+                var userManager = sp.GetRequiredService<UserManager<ApplicationUser>>();
+                return new UnitOfWork(context, userManager);
+            });
+
+
             services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<IUserRepository, UserRepository>();

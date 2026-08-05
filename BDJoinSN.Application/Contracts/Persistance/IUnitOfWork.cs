@@ -14,7 +14,7 @@ namespace BDJoinSN.Application.Contracts.Persistance
 
         IFriendRepository FriendRepository { get; }
 
-        //IUserRepository UserRepository { get; }
+        IUserRepository UserRepository { get; }
         Task<int> Complete();
     }
 }

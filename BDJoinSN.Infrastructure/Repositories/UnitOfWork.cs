@@ -22,12 +22,13 @@ namespace BDJoinSN.Infrastructure.Repositories
         public IPostRepository PostRepository => _postRepository ??= new PostRepository(_context);
         public IProfileRepository ProfileRepository =>
            _profileRepository ??= new ProfileRepository(_context);
-        //public IUserRepository UserRepository => _userRepository ??= new UserRepository(_userManager, ProfileRepository);
+        public IUserRepository UserRepository => _userRepository ??= new UserRepository(_userManager, ProfileRepository);
 
         public IFriendRepository FriendRepository => _friendRepository ??= new FriendRepository(_context);
-        public UnitOfWork(BDJoinDbContext context)
+        public UnitOfWork(BDJoinDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public IAsyncRepository<TEntity, TId> Repository<TEntity, TId>() where TEntity : BaseDomainModel<TId>

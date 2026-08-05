@@ -4,6 +4,7 @@ using AutoMapper;
 using BDJoinSN.Application.Features.Posts.Commands.CreatePost;
 using BDJoinSN.Application.Features.Posts.Queries.GetPostsById;
 using BDJoinSN.Application.Features.Users.Commands.UpdateProfilesCommand;
+using BDJoinSN.Application.Models;
 using BDJoinSN.Domain;
 
 namespace BDJoinSN.Application.Mapping
@@ -21,6 +22,7 @@ namespace BDJoinSN.Application.Mapping
                 .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.Author));
 
             CreateMap<Post, PostDto>();
+          
 
             CreateMap<UpdateUserProfileCommand, UserProfile>()
             .ForMember(dest => dest.Name, opt =>
@@ -48,6 +50,16 @@ namespace BDJoinSN.Application.Mapping
                 opt.Condition(src => src.Birthday != null);
                 opt.MapFrom(src => src.Birthday);
             });
+
+            CreateMap<UserProfile, UserDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.UserName))
+                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DisplayName))
+                .ForMember(dest => dest.ProfileImageUrl, opt => opt.MapFrom(src => src.ProfileImageUrl))
+                .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())
+                .ForMember(dest => dest.DeletedAt, opt => opt.Ignore()); 
         }
     }
 }
