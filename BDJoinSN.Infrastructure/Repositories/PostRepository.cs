@@ -25,20 +25,36 @@ namespace BDJoinSN.Infrastructure.Repositories
                 .ToListAsync(); 
         }
 
-        public async Task<IReadOnlyList<Post>> GetFeedAsync(List<string> friendIds, int pageIndex, int pageSize)
+        public async Task<IReadOnlyList<Post>> GetFeedAsync(List<string> friendIds, string currentUserId, int pageIndex, int pageSize)
         {
+            var userIds = new List<string>();
+
+            if(friendIds != null && friendIds.Any())
+            {
+                userIds.AddRange(friendIds);
+            }
+
+            userIds.Add(currentUserId);
+
+
             return await _context.Posts
-                .Where(p => friendIds.Contains(p.UserId))
+                .Where(p => userIds.Contains(p.UserId))
                 .OrderByDescending(p => p.CreatedDate)
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
         }
 
-        public async Task<int> GetFeedCountAsync(List<string> friendIds)
+        public async Task<int> GetFeedCountAsync(List<string> friendIds, string currentUserId)
         {
+            var userIds = new List<string>();
+            if (friendIds != null && friendIds.Any())
+                userIds.AddRange(friendIds);
+
+            userIds.Add(currentUserId);
+
             return await _context.Posts
-                .CountAsync(p => friendIds.Contains(p.UserId));
+                .CountAsync(p => userIds.Contains(p.UserId));
         }
     }
 }

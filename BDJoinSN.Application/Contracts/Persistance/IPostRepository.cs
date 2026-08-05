@@ -7,10 +7,11 @@ namespace BDJoinSN.Application.Contracts.Persistance
     {
         Task<IReadOnlyList<Post>> GetFeedAsync(
         List<string> friendIds,
+        string currentUserId,
         int pageIndex,
         int pageSize);
 
-        Task<int> GetFeedCountAsync(List<string> friendIds);
+        Task<int> GetFeedCountAsync(List<string> friendIds, string currentUserId);
 
         Task<List<Post>> GetAllPostByUsername(string username, int pageIndex, int pageSize);
 

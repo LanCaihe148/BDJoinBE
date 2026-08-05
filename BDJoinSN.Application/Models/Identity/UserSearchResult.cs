@@ -8,7 +8,6 @@ namespace BDJoinSN.Application.Models.Identity
         public string? DisplayName { get; set; }
         public string? Name { get; set; }
         public string? LastName { get; set; }
-
         public string? Biography { get; set; }
         public string? ProfileImageUrl { get; set; }
         public string? RelationshipStatus { get; set; } 

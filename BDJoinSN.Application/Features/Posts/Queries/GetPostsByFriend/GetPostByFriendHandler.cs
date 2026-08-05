@@ -46,14 +46,17 @@ namespace BDJoinSN.Application.Features.Posts.Queries.GetPostsByFriend
                 }
 
                 
-                var totalCount = await _unitOfWork.PostRepository.GetFeedCountAsync(friendIds);
+                var totalCount = await _unitOfWork.PostRepository.GetFeedCountAsync(friendIds, request.UserId);
 
                 
                 var posts = await _unitOfWork.PostRepository.GetFeedAsync(
                     friendIds,
+                    request.UserId,
                     request.PageIndex,
                     request.PageSize);
 
+
+               
                 
                 var postDtos = _mapper.Map<List<PostDto>>(posts);
 
