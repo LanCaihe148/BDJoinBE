@@ -18,10 +18,11 @@ namespace BDJoinSN.Infrastructure.Repositories
         private readonly BDJoinDbContext _appDbContext;
         private readonly ILogger<ProfileService> _logger;
 
-        public ProfileService(UserManager<ApplicationUser> userManager, BDJoinDbContext appDbContext)
+        public ProfileService(UserManager<ApplicationUser> userManager, BDJoinDbContext appDbContext, ILogger<ProfileService> logger)
         {
             _userManager = userManager;
             _appDbContext = appDbContext;
+            _logger = logger;
         }
 
         public async Task<ProfileResponse> GetOwnProfileAsync(string userId)
