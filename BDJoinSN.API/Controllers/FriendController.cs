@@ -213,28 +213,6 @@ namespace BDJoinSN.API.Controllers
             }
         }
 
-        [HttpGet("pending")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetPendingRequests()
-        {
-            try
-            {
-                var userId = User.FindFirstValue("uid")
-                    ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
-                    ?? throw new UnauthorizedAccessException("Usuario no autenticado");
-
-                
-
-                return Ok(new { message = "Endpoint para obtener solicitudes pendientes" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener solicitudes pendientes");
-                return StatusCode(500, new { error = "Error al obtener solicitudes" });
-            }
-        }
-
 
         [HttpGet("list")]
         [ProducesResponseType(typeof(PaginatedResult<FriendDto>), StatusCodes.Status200OK)]
