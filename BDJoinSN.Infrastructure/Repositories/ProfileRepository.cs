@@ -1,5 +1,6 @@
 ﻿
 using BDJoinSN.Application.Contracts.Persistance;
+using BDJoinSN.Application.Models;
 using BDJoinSN.Domain;
 using BDJoinSN.Identity.Models;
 using BDJoinSN.Infrastructure.Persistance;
@@ -65,6 +66,24 @@ namespace BDJoinSN.Infrastructure.Repositories
                 profile.UpdatedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<UserInfoDto> GetUserInfoByIdAsync(string userId)
+        {
+            var profile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.Id == userId);
+
+            if(profile == null)
+            {
+                return null;
+            }
+
+            return new UserInfoDto
+            {
+                Id = profile.Id,
+                Username = profile.UserName ?? string.Empty,
+                DisplayName = profile.DisplayName ?? profile.UserName,
+                ProfileImageUrl = profile.ProfileImageUrl
+            };
         }
     }
 }

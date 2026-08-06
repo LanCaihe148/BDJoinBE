@@ -1,4 +1,5 @@
 ﻿
+using BDJoinSN.Application.Models;
 using BDJoinSN.Domain;
 
 namespace BDJoinSN.Application.Contracts.Persistance
@@ -9,5 +10,8 @@ namespace BDJoinSN.Application.Contracts.Persistance
         Task<bool> ExistsByUserIdAsync(string userId);
         Task UpdateProfileImageAsync(string userId, string imageUrl);
         Task UpdateDisplayNameAsync(string userId, string displayName);
+
+        Task<UserInfoDto> GetUserInfoByIdAsync(string userId);
+
     }
 }
