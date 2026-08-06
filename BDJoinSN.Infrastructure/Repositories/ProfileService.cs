@@ -74,6 +74,7 @@ namespace BDJoinSN.Infrastructure.Repositories
             var profile = await _appDbContext.UserProfiles
                 .FirstOrDefaultAsync(up => up.Id == user.Id);
 
+           
             var friends = await _appDbContext.FriendRequests
                 .Where(fr =>
                     (fr.SenderId == user.Id || fr.ReceiverId == user.Id) &&
@@ -92,9 +93,11 @@ namespace BDJoinSN.Infrastructure.Repositories
                 })
                 .ToList();
 
+            
             RelationshipStatus? relationship = null;
             if (!string.IsNullOrEmpty(currentUserId) && currentUserId != user.Id)
             {
+               
                 var existingRequest = await _appDbContext.FriendRequests
                     .FirstOrDefaultAsync(fr =>
                         (fr.SenderId == currentUserId && fr.ReceiverId == user.Id) ||
@@ -120,7 +123,7 @@ namespace BDJoinSN.Infrastructure.Repositories
                 ProfileImageUrl = profile?.ProfileImageUrl,
                 FriendsCount = friendsCount,
                 RecentFriends = recentFriends,
-                RelationshipStatus = relationship
+                RelationshipStatus = relationship 
             };
         }
     }
