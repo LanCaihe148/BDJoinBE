@@ -63,7 +63,7 @@ namespace BDJoinSN.API.Controllers
         public async Task<ActionResult<PublicProfileResponse>> GetPublicProfile(string username)
         {
             var currentUserId = User?.FindFirstValue("uid")
-                ?? User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                    ?? User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var profile = await _profileService.GetPublicProfileAsync(username, currentUserId);
             return Ok(profile);
