@@ -89,5 +89,15 @@ namespace BDJoinSN.Infrastructure.Repositories
                 .ToListAsync();
 
         }
+
+        public async Task<IReadOnlyList<FriendRequest>> GetReceivedRequestAsync(string userId)
+        {
+            return await _context.FriendRequests
+                .Where(fr => fr.ReceiverId == userId && fr.Status == FriendRequestStatus.Pending)
+                .Include(fr => fr.SenderId)
+                .OrderByDescending(fr => fr.CreatedAt)
+                .ToListAsync();
+
+        }
     }
 }

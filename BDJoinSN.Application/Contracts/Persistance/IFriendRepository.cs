@@ -13,6 +13,8 @@ namespace BDJoinSN.Application.Contracts.Persistance
         Task<IReadOnlyList<FriendRequest>> GetAllFriendsAsync(string userId);
 
         Task<IReadOnlyList<FriendRequest>> GetSentRequestAsync(string userId);
+
+        Task<IReadOnlyList<FriendRequest>> GetReceivedRequestAsync(string userId);
         void AddFriendRequest(FriendRequest friendRequest);
         void UpdateFR(FriendRequest friendRequest);
         void DeleteFR(FriendRequest friendRequest);
