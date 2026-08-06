@@ -62,7 +62,9 @@ namespace BDJoinSN.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PublicProfileResponse>> GetPublicProfile(string username)
         {
-            var currentUserId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUserId = User?.FindFirstValue("uid")
+                ?? User?.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var profile = await _profileService.GetPublicProfileAsync(username, currentUserId);
             return Ok(profile);
         }
