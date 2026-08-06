@@ -8,6 +8,7 @@ namespace BDJoinSN.Application.Models
 {
     public class PublicProfileResponse
     {
+        public string UserId { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
         public string? Name { get; set; }
         public string? LastName { get; set; }

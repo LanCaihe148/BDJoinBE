@@ -116,6 +116,7 @@ namespace BDJoinSN.Infrastructure.Repositories
 
             return new PublicProfileResponse
             {
+                UserId = user.Id,
                 UserName = user.UserName ?? string.Empty,
                 Name = profile?.Name,
                 LastName = profile?.LastName,
