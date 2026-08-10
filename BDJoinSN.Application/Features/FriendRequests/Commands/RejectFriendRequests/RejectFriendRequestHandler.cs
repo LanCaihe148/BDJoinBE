@@ -62,7 +62,7 @@ namespace BDJoinSN.Application.Features.FriendRequests.Commands.RejectFriendRequ
                 friendRequest.UpdatedAt = DateTime.UtcNow;
 
                 
-                _unitOfWork.FriendRepository.UpdateFR(friendRequest);
+                _unitOfWork.FriendRepository.DeleteFR(friendRequest);
                 await _unitOfWork.Complete();
 
                 _logger.LogInformation($"Solicitud de amistad {requestId} rechazada por usuario {request.UserId}");
