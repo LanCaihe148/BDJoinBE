@@ -16,5 +16,7 @@ namespace BDJoinSN.Application.Contracts.Persistance
         Task<List<Post>> GetAllPostByUsername(string username, int pageIndex, int pageSize);
 
         Task<int> CountByUsernameAsync(string username);
+
+        Task<int> CountOwnPosts(string userId);
     }
 }

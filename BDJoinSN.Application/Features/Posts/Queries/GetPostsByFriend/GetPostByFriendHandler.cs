@@ -32,16 +32,21 @@ namespace BDJoinSN.Application.Features.Posts.Queries.GetPostsByFriend
 
                 if (!friendIds.Any())
                 {
+                    var minePosts = await _unitOfWork.PostRepository.GetAsync(p => p.UserId == request.UserId);
+                    var mPostCount = await _unitOfWork.PostRepository.CountOwnPosts(request.UserId);
+
+                    var totalOwnPostsPages = (int)Math.Ceiling((double)mPostCount / request.PageSize);
+                    var mPostDtos = _mapper.Map<List<PostDto>>(minePosts);
                     _logger.LogInformation("El usuario {UserId} no tiene amigos", request.UserId);
                     return new FeedResponse
                     {
-                        Items = new List<PostDto>(),
-                        TotalCount = 0,
+                        Items = mPostDtos,
+                        TotalCount = mPostCount,
                         PageIndex = request.PageIndex,
                         PageSize = request.PageSize,
-                        TotalPages = 0,
-                        HasNextPage = false,
-                        HasPreviousPage = false
+                        TotalPages = totalOwnPostsPages,
+                        HasNextPage = request.PageIndex < totalOwnPostsPages,
+                        HasPreviousPage = request.PageIndex > 1
                     };
                 }
 

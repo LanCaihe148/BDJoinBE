@@ -17,6 +17,11 @@ namespace BDJoinSN.Infrastructure.Repositories
                 .CountAsync(p => p.Author == username);
         }
 
+        public async Task<int> CountOwnPosts(string userId)
+        {
+            return await _context.Posts.CountAsync(p => p.Author == userId);
+        }
+
         public async Task<List<Post>> GetAllPostByUsername(string username, int pageIndex, int pageSize)
         {
             return await _context.Posts.Where(p => p.Author == username).OrderByDescending(p => p.CreatedDate)
