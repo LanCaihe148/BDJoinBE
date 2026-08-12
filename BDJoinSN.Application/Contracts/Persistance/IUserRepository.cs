@@ -15,7 +15,7 @@ namespace BDJoinSN.Application.Contracts.Persistance
             int pageSize = 10);
 
         Task<UserDto?> GetByUsernameAsync(string username);
-
+        Task<bool> UpdateAppUser(string UserId);
         Task<bool> ExistsByUsernameAsync(string username);
     }
 }
