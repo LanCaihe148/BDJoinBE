@@ -65,6 +65,11 @@ namespace BDJoinSN.Application.Features.Users.Commands.UpdateProfilesCommand
                     profile.Name = request.Name;
                 }
 
+                if (!string.IsNullOrEmpty(request.UserName))
+                {
+                    profile.UserName = request.UserName;
+                }
+
                 if (!string.IsNullOrEmpty(request.LastName))
                 {
                     profile.LastName = request.LastName;
