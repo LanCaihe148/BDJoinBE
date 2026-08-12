@@ -35,6 +35,11 @@ namespace BDJoinSN.Application.Mapping
                 opt.Condition(src => src.LastName != null);
                 opt.MapFrom(src => src.LastName);
             })
+            .ForMember(dest => dest.UserName, opt =>
+            {
+                opt.Condition(src => src.UserName != null);
+                opt.MapFrom(src => src.UserName);
+            })
             .ForMember(dest => dest.Biography, opt =>
             {
                 opt.Condition(src => src.Biography != null);
