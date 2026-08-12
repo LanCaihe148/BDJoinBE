@@ -1,5 +1,6 @@
 ﻿
 
+using BDJoinSN.Application.Features.Users.Commands.UpdateProfilesCommand;
 using BDJoinSN.Application.Models;
 using BDJoinSN.Application.Models.Identity;
 using BDJoinSN.Application.Models.Pagination;
@@ -15,7 +16,7 @@ namespace BDJoinSN.Application.Contracts.Persistance
             int pageSize = 10);
 
         Task<UserDto?> GetByUsernameAsync(string username);
-        Task<bool> UpdateAppUser(string UserId);
+        Task<bool> UpdateAppUser(UpdateUserProfileCommand request);
         Task<bool> ExistsByUsernameAsync(string username);
     }
 }

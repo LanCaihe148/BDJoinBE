@@ -83,7 +83,7 @@ namespace BDJoinSN.Application.Features.Users.Commands.UpdateProfilesCommand
                 
                 _logger.LogInformation($"Perfil del usuario {request.UserId} actualizado correctamente");
 
-                await _unitOfWork.UserRepository.UpdateAppUser(profile.Id);
+                await _unitOfWork.UserRepository.UpdateAppUser(request);
                 return true;
             }
             catch (Exception ex)

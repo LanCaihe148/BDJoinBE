@@ -1,6 +1,7 @@
 ﻿
 using BDJoinSN.Application.Contracts.Persistance;
 using BDJoinSN.Application.Exceptions;
+using BDJoinSN.Application.Features.Users.Commands.UpdateProfilesCommand;
 using BDJoinSN.Application.Models;
 using BDJoinSN.Application.Models.Identity;
 using BDJoinSN.Application.Models.Pagination;
@@ -52,18 +53,18 @@ namespace BDJoinSN.Identity.Repositories
             };
         }
 
-        public async Task<bool> UpdateAppUser(string UserId)
+        public async Task<bool> UpdateAppUser(UpdateUserProfileCommand request)
         {
-            if(string.IsNullOrEmpty(UserId)){
-                throw new NullOrEmptyException(UserId);
+            if(string.IsNullOrEmpty(request.UserId)){
+                throw new NullOrEmptyException(request.UserId);
             }
 
-            var appUser = await _userManager.FindByIdAsync(UserId);
+            var appUser = await _userManager.FindByIdAsync(request.UserId);
 
-            var results = await _userManager.UpdateAsync(appUser);
+            appUser.UserName = request.UserName;
+            appUser.ProfileImageUrl = request.ProfileImageUrl;
 
-            if (results.Succeeded) { return true; }
-            throw new ValidationException();
+            return true;
         }
         public async Task<PaginatedResult<UserSearchResult>> SearchUsersAsync(
             string searchTerm,
