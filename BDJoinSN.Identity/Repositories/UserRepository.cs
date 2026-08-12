@@ -64,7 +64,14 @@ namespace BDJoinSN.Identity.Repositories
             appUser.UserName = request.UserName;
             appUser.ProfileImageUrl = request.ProfileImageUrl;
 
-            return true;
+            var results = await _userManager.UpdateAsync(appUser);
+
+            if (results.Succeeded)
+            {
+                return true;
+            }
+
+            throw new ValidationException();
         }
         public async Task<PaginatedResult<UserSearchResult>> SearchUsersAsync(
             string searchTerm,
