@@ -66,12 +66,13 @@ namespace BDJoinSN.Identity.Repositories
 
             var results = await _userManager.UpdateAsync(appUser);
 
-            if (results.Succeeded)
+            if (results.Succeeded)  
             {
                 return true;
             }
 
-            throw new ValidationException();
+            var errors = string.Join("; ", results.Errors.Select(e => e.Description));
+            throw new BadRequestException($"Error al actualizar usuario: {errors}");
         }
         public async Task<PaginatedResult<UserSearchResult>> SearchUsersAsync(
             string searchTerm,
