@@ -9,6 +9,6 @@ namespace BDJoinSN.Application.Contracts.Identity
 
         Task<RegistrationResponse> Register(RegistrationRequest request);
 
-        
+        Task<bool> Delete(string UserId);
     }
 }

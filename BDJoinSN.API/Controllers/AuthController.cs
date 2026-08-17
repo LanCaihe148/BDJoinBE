@@ -5,6 +5,7 @@ using BDJoinSN.Application.Models.Identity;
 using BDJoinSN.Identity.Features.Auth.Commands.ChangePassword;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -100,7 +101,21 @@ namespace BDJoinSN.API.Controllers
             }
         
         }
+        [HttpDelete("Delete")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<bool> DeleteAccount()
+        {
+            var userId = User.FindFirstValue("uid")
+                    ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            var response =  await _authService.Delete(userId);
+            return response;
+            
+        }
         [HttpPost("Change-password")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]

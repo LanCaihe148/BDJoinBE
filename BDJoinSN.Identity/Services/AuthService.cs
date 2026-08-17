@@ -35,6 +35,31 @@ namespace BDJoinSN.Identity.Services
             _logger = logger;
         }
 
+        public async Task<bool> Delete(string UserId)
+        {
+            if (string.IsNullOrEmpty(UserId))
+            {
+                throw new NullOrEmptyException(UserId);
+            }
+
+            var user = await _userManager.FindByIdAsync(UserId);
+
+
+            if(user == null)
+            {
+                throw new BadRequestException($"{UserId} No existe");
+            }
+
+            var results = await _userManager.DeleteAsync(user);
+
+            if (results.Succeeded)
+            {
+                return true;
+            }
+            throw new Exception();
+            
+        }
+
         public async Task<AuthResponse> Login(AuthRequest request)
         {
             ApplicationUser? findUser = null;
@@ -100,6 +125,8 @@ namespace BDJoinSN.Identity.Services
                 _logger.LogWarning("Intento de registro con username existente");
                 throw new BadRequestException($"El username {request.Username} ya esta en uso.");
             }
+
+        
 
             var user = new ApplicationUser
             {
