@@ -1,20 +1,24 @@
 ﻿
+using System.Diagnostics;
 using BDJoinSN.Application.Contracts.Persistance;
+using BDJoinSN.Application.Exceptions;
 using BDJoinSN.Application.Models;
 using BDJoinSN.Domain;
 using BDJoinSN.Identity.Models;
 using BDJoinSN.Infrastructure.Persistance;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace BDJoinSN.Infrastructure.Repositories
 {
     public class ProfileRepository : RepositoryBase<UserProfile, string>, IProfileRepository
     {
 
-        private readonly UserManager<UserProfile> _userManager;
+        
         public ProfileRepository(BDJoinDbContext context) : base(context)
         {
+           
         }
 
         public async Task<UserProfile?> GetByUserIdAsync(string userId)
@@ -23,15 +27,7 @@ namespace BDJoinSN.Infrastructure.Repositories
                 .FirstOrDefaultAsync(p => p.Id == userId);
         }
 
-        //public async Task<UserProfile?> GetByUsernameAsync(string username)
-        //{
-        //    var user = await _userManager.FindByNameAsync(username);
-        //    if (user == null) return null;
-
-        //    // Luego buscar el perfil por el Id del usuario
-        //    return await _context.Set<UserProfile>()
-        //        .FirstOrDefaultAsync(p => p.Id == user.Id);
-        //}
+        
 
         public async Task<bool> ExistsByUserIdAsync(string userId)
         {
@@ -39,11 +35,7 @@ namespace BDJoinSN.Infrastructure.Repositories
                 .AnyAsync(p => p.Id == userId);
         }
 
-        //public async Task<bool> ExistsByUsernameAsync(string userId)
-        //{
-        //    return await _context.Set<UserProfile>()
-        //        .AnyAsync(p => p.Id == userId);
-        //}
+
 
 
         public async Task UpdateProfileImageAsync(string userId, string imageUrl)
@@ -84,6 +76,27 @@ namespace BDJoinSN.Infrastructure.Repositories
                 DisplayName = profile.DisplayName ?? profile.UserName,
                 ProfileImageUrl = profile.ProfileImageUrl
             };
+        }
+
+        public async Task<bool> DeleteProfile(string userId)
+        {
+             
+            if (string.IsNullOrEmpty(userId)){
+                throw new BadRequestException("El ID del usuario no puede estar vacío");
+            }
+            
+            var profile = await _context.UserProfiles
+                .FirstOrDefaultAsync(p => p.Id == userId);
+            
+            
+            if (profile != null)
+            {
+                _context.UserProfiles.Remove(profile);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
         }
     }
 }

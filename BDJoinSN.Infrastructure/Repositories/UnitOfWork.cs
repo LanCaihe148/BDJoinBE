@@ -6,6 +6,7 @@ using BDJoinSN.Identity.Models;
 using BDJoinSN.Identity.Repositories;
 using BDJoinSN.Infrastructure.Persistance;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Collections;
 
 namespace BDJoinSN.Infrastructure.Repositories
@@ -19,12 +20,16 @@ namespace BDJoinSN.Infrastructure.Repositories
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
         private IFriendRepository _friendRepository;
+
+
+        // profiles definition 
         public IPostRepository PostRepository => _postRepository ??= new PostRepository(_context);
-        public IProfileRepository ProfileRepository =>
-           _profileRepository ??= new ProfileRepository(_context);
+        public IProfileRepository ProfileRepository => _profileRepository ??= new ProfileRepository(_context);
         public IUserRepository UserRepository => _userRepository ??= new UserRepository(_userManager, ProfileRepository);
 
         public IFriendRepository FriendRepository => _friendRepository ??= new FriendRepository(_context);
+
+       
         public UnitOfWork(BDJoinDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
@@ -51,6 +56,32 @@ namespace BDJoinSN.Infrastructure.Repositories
         public async Task<int> Complete()
         {
             return await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteUserRelatedDataAsync(string userId)
+        {
+            
+            await FriendRepository.DeleteFriendRequestsByUserIdAsync(userId);
+
+            
+            var posts = await _context.Posts
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+
+            if (posts.Any())
+            {
+                _context.Posts.RemoveRange(posts);
+            }
+
+            
+            var profile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.Id == userId);
+            if (profile != null)
+            {
+                _context.UserProfiles.Remove(profile);
+            }
+
+           
+            await _context.SaveChangesAsync();
         }
 
         public void Dispose()

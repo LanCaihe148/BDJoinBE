@@ -22,41 +22,45 @@ namespace BDJoinSN.Identity.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IProfileCreationService _profileCreationService;
         private readonly JwtSettings _jwtSettings;
         private readonly ILogger<AuthService> _logger;
 
-        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IProfileCreationService profileCreationService, IOptions<JwtSettings> jwtSettings, ILogger<AuthService> logger)
+        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IUnitOfWork unitOfWork, IProfileCreationService profileCreationService, IOptions<JwtSettings> jwtSettings, ILogger<AuthService> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _unitOfWork = unitOfWork;
             _profileCreationService = profileCreationService;
             _jwtSettings = jwtSettings.Value;
             _logger = logger;
         }
 
-        public async Task<bool> Delete(string UserId)
+        public async Task<bool> Delete(string userId)
         {
-            if (string.IsNullOrEmpty(UserId))
-            {
-                throw new NullOrEmptyException(UserId);
-            }
+            
+            if (string.IsNullOrEmpty(userId))
+        throw new BadRequestException("El ID del usuario no puede estar vacío");
 
-            var user = await _userManager.FindByIdAsync(UserId);
+        
+        var appUser = await _userManager.FindByIdAsync(userId);
+        if (appUser == null)
+            throw new NotFoundException("Usuario", userId);
 
+        await _unitOfWork.DeleteUserRelatedDataAsync(userId);
 
-            if(user == null)
-            {
-                throw new BadRequestException($"{UserId} No existe");
-            }
+        
+        var result = await _userManager.DeleteAsync(appUser);
 
-            var results = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+            throw new BadRequestException($"Error al eliminar usuario: {errors}");
+        }
 
-            if (results.Succeeded)
-            {
-                return true;
-            }
-            throw new Exception();
+        _logger.LogInformation($"Usuario {userId} eliminado correctamente junto con todos sus datos");
+        return true;
             
         }
 

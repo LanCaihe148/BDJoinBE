@@ -99,5 +99,18 @@ namespace BDJoinSN.Infrastructure.Repositories
                 .ToListAsync();
 
         }
+
+        public async Task DeleteFriendRequestsByUserIdAsync(string userId)
+        {
+            var friendRequests = await _context.FriendRequests
+                .Where(fr => fr.SenderId == userId || fr.ReceiverId == userId)
+                .ToListAsync();
+
+            if (friendRequests.Any())
+            {
+                _context.FriendRequests.RemoveRange(friendRequests);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

@@ -101,21 +101,59 @@ namespace BDJoinSN.API.Controllers
             }
         
         }
+        
+        
         [HttpDelete("Delete")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<bool> DeleteAccount()
+        public async Task<IActionResult> DeleteAccount()
         {
-            var userId = User.FindFirstValue("uid")
-                    ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+            try
+            {
+                var userId = User.FindFirstValue("uid")
+                    ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? throw new UnauthorizedAccessException("Usuario no autenticado");
 
-            var response =  await _authService.Delete(userId);
-            return response;
-            
+                var result = await _authService.Delete(userId);
+
+                
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+                    if (handler.CanReadToken(token))
+                    {
+                        var jwtToken = handler.ReadJwtToken(token);
+                        await _tokenBlacklistService.AddToBlacklistAsync(token, jwtToken.ValidTo);
+                    }
+                }
+
+                _logger.LogInformation($"Cuenta {userId} eliminada correctamente");
+                return Ok(new 
+                { 
+                    message = "Cuenta eliminada correctamente",
+                    success = result 
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar cuenta");
+                return StatusCode(500, new { error = "Error al eliminar la cuenta" });
+            }
         }
+
+        
         [HttpPost("Change-password")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]

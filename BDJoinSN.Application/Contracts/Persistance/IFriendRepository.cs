@@ -18,7 +18,7 @@ namespace BDJoinSN.Application.Contracts.Persistance
         void AddFriendRequest(FriendRequest friendRequest);
         void UpdateFR(FriendRequest friendRequest);
         void DeleteFR(FriendRequest friendRequest);
-
+        Task DeleteFriendRequestsByUserIdAsync(string userId);
 
     }
 }

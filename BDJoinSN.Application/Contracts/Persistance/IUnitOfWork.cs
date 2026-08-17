@@ -15,6 +15,8 @@ namespace BDJoinSN.Application.Contracts.Persistance
         IFriendRepository FriendRepository { get; }
 
         IUserRepository UserRepository { get; }
+
+        Task DeleteUserRelatedDataAsync(string userId);
         Task<int> Complete();
     }
 }

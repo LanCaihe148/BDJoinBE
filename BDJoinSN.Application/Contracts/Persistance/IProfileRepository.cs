@@ -12,6 +12,6 @@ namespace BDJoinSN.Application.Contracts.Persistance
         Task UpdateDisplayNameAsync(string userId, string displayName);
 
         Task<UserInfoDto> GetUserInfoByIdAsync(string userId);
-
+        Task<bool> DeleteProfile(string userId);
     }
 }
