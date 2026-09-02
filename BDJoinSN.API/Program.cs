@@ -13,10 +13,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.ConfigureAppConfiguration((context, config) =>
 {
-    if (context.HostingEnvironment.IsProduction())
+    
+    config.Sources.Clear();
+
+    
+    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+
+    
+    var env = context.HostingEnvironment.EnvironmentName;
+    config.AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: false);
+
+    
+    config.AddEnvironmentVariables();
+
+    
+    if (args != null)
     {
-        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
-        config.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: false);
+        config.AddCommandLine(args);
     }
 });
 
