@@ -4,6 +4,7 @@ using BDJoinSN.Application;
 using BDJoinSN.Application.Contracts.Persistance;
 using BDJoinSN.Identity;
 using BDJoinSN.Identity.Features.Auth.Commands.ChangePassword;
+using BDJoinSN.Identity.Seed;
 using BDJoinSN.Infrastructure;
 using BDJoinSN.Infrastructure.Repositories;
 using MediatR;
@@ -13,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
+
 // Health Checks
 builder.Services.AddHealthChecks();
 
@@ -55,6 +57,7 @@ builder.Services.AddOpenApi();
 // ============================================
 var app = builder.Build();
 
+
 // ============================================
 // 6. MIDDLEWARE PIPELINE
 // ============================================
@@ -77,7 +80,7 @@ else
 // Exception Middleware (SIEMPRE)
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<TokenBlacklistMiddleware>();
-// Swagger Services
+// Swagger Servicesp
 app.UseSwaggerServices();
 
 // Health Check
