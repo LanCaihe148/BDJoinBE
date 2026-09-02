@@ -9,29 +9,30 @@ using BDJoinSN.Infrastructure;
 using BDJoinSN.Infrastructure.Repositories;
 using MediatR;
 
-var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureAppConfiguration((context, config) =>
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+var currentDirectory = Directory.GetCurrentDirectory();
+
+
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(currentDirectory)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+    .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: false)
+    .AddEnvironmentVariables()
+    .Build();
+
+
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
-    
-    config.Sources.Clear();
-
-    
-    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
-
-    
-    var env = context.HostingEnvironment.EnvironmentName;
-    config.AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: false);
-
-    
-    config.AddEnvironmentVariables();
-
-    
-    if (args != null)
-    {
-        config.AddCommandLine(args);
-    }
+    EnvironmentName = environment,
+    ApplicationName = typeof(Program).Assembly.GetName().Name,
+    ContentRootPath = currentDirectory,
+    WebRootPath = null // Si no tienes wwwroot
 });
+
+
+builder.Configuration.Sources.Clear();
+builder.Configuration.AddConfiguration(configuration);
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
@@ -77,7 +78,6 @@ builder.Services.AddOpenApi();
 // 5. BUILD APP
 // ============================================
 var app = builder.Build();
-
 
 // ============================================
 // 6. MIDDLEWARE PIPELINE
