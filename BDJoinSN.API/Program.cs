@@ -4,7 +4,6 @@ using BDJoinSN.Application;
 using BDJoinSN.Application.Contracts.Persistance;
 using BDJoinSN.Identity;
 using BDJoinSN.Identity.Features.Auth.Commands.ChangePassword;
-using BDJoinSN.Identity.Seed;
 using BDJoinSN.Infrastructure;
 using BDJoinSN.Infrastructure.Repositories;
 using MediatR;
