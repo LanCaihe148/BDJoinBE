@@ -9,115 +9,50 @@ using BDJoinSN.Infrastructure;
 using BDJoinSN.Infrastructure.Repositories;
 using MediatR;
 
+var builder = WebApplication.CreateBuilder(args);
 
-var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
-var currentDirectory = Directory.GetCurrentDirectory();
+// Configuración básica
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
 
-
-var configuration = new ConfigurationBuilder()
-    .SetBasePath(currentDirectory)
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-    .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: false)
-    .AddEnvironmentVariables()
-    .Build();
-
-
-var builder = WebApplication.CreateBuilder(new WebApplicationOptions
-{
-    EnvironmentName = environment,
-    ApplicationName = typeof(Program).Assembly.GetName().Name,
-    ContentRootPath = currentDirectory,
-    WebRootPath = null // Si no tienes wwwroot
-});
-
-
-builder.Configuration.Sources.Clear();
-builder.Configuration.AddConfiguration(configuration);
-
+// Puerto para Render
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
 
-// Health Checks
+// Servicios
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 
-// Servicios de aplicación
+// Tus servicios
 builder.Services.AddApplicationServices();
-
-// Servicios de infraestructura
 builder.Services.AddInfrastructureServices(builder.Configuration);
-
-// Servicios de Identity
 builder.Services.ConfigureIdentityServices(builder.Configuration);
-
-// Registrar servicios adicionales
 builder.Services.AddScoped<IProfileCreationService, ProfileCreationService>();
 builder.Services.AddScoped<IRequestHandler<ChangePasswordCommand, bool>, ChangePasswordHandler>();
 
-// Configurar Swagger
-builder.Services.ConfigureSwaggerServices();
-
-// ============================================
-// 3. CONFIGURAR CORS (PERMITIR TODO EN RENDER)
-// ============================================
-builder.Services.AddCors(op =>
-    op.AddPolicy("CorsPolicy",
-    policy =>
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
     {
         policy.AllowAnyOrigin()
               .AllowAnyMethod()
               .AllowAnyHeader();
-    }));
+    });
+});
 
-// ============================================
-// 4. CONTROLLERS Y OPENAPI
-// ============================================
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
-
-// ============================================
-// 5. BUILD APP
-// ============================================
 var app = builder.Build();
 
-// ============================================
-// 6. MIDDLEWARE PIPELINE
-// ============================================
+// Middleware
+app.UseSwagger();
+app.UseSwaggerUI();
 
-// Swagger en desarrollo (o siempre)
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
-else
-{
-    // En producción, habilitar Swagger para documentación
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "BDJoinSN API v1");
-    });
-}
-
-// Exception Middleware (SIEMPRE)
-app.UseMiddleware<ExceptionMiddleware>();
-app.UseMiddleware<TokenBlacklistMiddleware>();
-// Swagger Servicesp
-app.UseSwaggerServices();
-
-// Health Check
-app.MapHealthChecks("/healthz");
-
-// CORS
-app.UseCors("CorsPolicy");
-
-// Autenticación y Autorización
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Map Controllers
 app.MapControllers();
+app.MapHealthChecks("/health");
 
-// ============================================
-// 7. RUN
-// ============================================
 app.Run();
