@@ -10,8 +10,6 @@ using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuración básica
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
 
 // Puerto para Render
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
