@@ -1,4 +1,3 @@
-using BDJoinSN.API.Extensions;
 using BDJoinSN.API.Middleware;
 using BDJoinSN.Application;
 using BDJoinSN.Application.Contracts.Persistance;
@@ -45,6 +44,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
