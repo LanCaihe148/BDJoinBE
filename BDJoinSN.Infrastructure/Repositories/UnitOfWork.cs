@@ -18,6 +18,7 @@ namespace BDJoinSN.Infrastructure.Repositories
         private readonly UserManager<ApplicationUser> _userManager;
         private IPostRepository _postRepository;
         private IUserRepository _userRepository;
+         private readonly IUserInfoService _userInfo;
         private IProfileRepository _profileRepository;
         private IFriendRepository _friendRepository;
 
@@ -27,13 +28,14 @@ namespace BDJoinSN.Infrastructure.Repositories
         public IProfileRepository ProfileRepository => _profileRepository ??= new ProfileRepository(_context);
         public IUserRepository UserRepository => _userRepository ??= new UserRepository(_userManager, ProfileRepository);
 
-        public IFriendRepository FriendRepository => _friendRepository ??= new FriendRepository(_context);
+        public IFriendRepository FriendRepository => _friendRepository ??= new FriendRepository(_context, _userInfo);
 
        
-        public UnitOfWork(BDJoinDbContext context, UserManager<ApplicationUser> userManager)
+        public UnitOfWork(BDJoinDbContext context, UserManager<ApplicationUser> userManager, IUserInfoService userInfo)
         {
             _context = context;
             _userManager = userManager;
+            _userInfo = userInfo;
         }
 
         public IAsyncRepository<TEntity, TId> Repository<TEntity, TId>() where TEntity : BaseDomainModel<TId>
