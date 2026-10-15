@@ -24,14 +24,15 @@ namespace BDJoinSN.Infrastructure
             {
                 var context = sp.GetRequiredService<BDJoinDbContext>();
                 var userManager = sp.GetRequiredService<UserManager<ApplicationUser>>();
-                return new UnitOfWork(context, userManager);
+                var userInfo = sp.GetRequiredService<IUserInfoService>();
+                return new UnitOfWork(context, userManager, userInfo);
             });
 
 
             services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-
+            services.AddScoped<IUserInfoService, UserInfoService>();
             
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IProfileCreationService, ProfileCreationService>();
