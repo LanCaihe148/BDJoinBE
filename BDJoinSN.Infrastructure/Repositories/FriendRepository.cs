@@ -1,17 +1,23 @@
-﻿using BDJoinSN.Application.Contracts.Persistance;
+﻿using System.Security.Principal;
+using BDJoinSN.Application.Contracts.Persistance;
 using BDJoinSN.Application.Exceptions;
 using BDJoinSN.Application.Features.FriendRequests.Commands.CreateFriendRequests;
+using BDJoinSN.Application.Models;
 using BDJoinSN.Domain;
 using BDJoinSN.Infrastructure.Persistance;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace BDJoinSN.Infrastructure.Repositories
 {
     public class FriendRepository : RepositoryBase<FriendRequest, int>, IFriendRepository
     {
-        public FriendRepository(BDJoinDbContext context) : base(context)
+        private readonly IUserInfoService _userinfoservice;
+
+        
+        public FriendRepository(BDJoinDbContext context, IUserInfoService userinfo) : base(context)
         {
-            
+            _userinfoservice = userinfo;
         }
 
         public async Task<bool> HasPendingRequestAsync(string senderId, string receiverId)
@@ -112,5 +118,159 @@ namespace BDJoinSN.Infrastructure.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<IReadOnlyList<FriendRequest>> GetFriendSuggestions(string userId)
+        {
+            var ownFriends = await GetAllFriendsAsync(userId);
+
+            var ownFriendsIds = ownFriends.Select(fr => fr.SenderId == userId ? fr.ReceiverId : fr.SenderId).ToList();
+
+            if (!ownFriends.Any())
+            {
+                return new List<FriendRequest>();
+            }
+
+            var sugg = new List<FriendRequest>();
+
+            var suggUsersId = new HashSet<string>();
+
+            for(int i=0; i<ownFriendsIds.Count(); i++)
+            {
+                var friendId = ownFriendsIds[i];
+
+                var friendsOfFriends = await GetAllFriendsAsync(friendId);
+                
+                for(int j=0; j<friendsOfFriends.Count(); j++)
+                {
+                    var fr = friendsOfFriends[j];
+                    var potentialFriendId = fr.SenderId == friendId ? fr.ReceiverId : fr.SenderId;
+
+                    if (potentialFriendId == userId)
+                    {
+                        continue;
+                    }
+                    if (ownFriendsIds.Contains(potentialFriendId))
+                    {
+                        continue;
+                    }
+                    if (suggUsersId.Contains(potentialFriendId))
+                    {
+                        continue;
+                    }
+                    suggUsersId.Add(potentialFriendId);
+
+                    var suggestion= new FriendRequest
+                    {
+                        SenderId = friendId,
+                        ReceiverId = potentialFriendId,
+                        Status = FriendRequestStatus.Pending,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    sugg.Add(suggestion);
+
+                    
+                }
+            }
+            return sugg;
+
+        }
+
+        public async Task<List<string>> GetFriendSugg(string userId)
+        {
+            var ownFriends = await GetAllFriendsAsync(userId);
+
+            var ownFriendsIds = ownFriends.Select(fr => fr.SenderId == userId ? fr.ReceiverId : fr.SenderId).ToList();
+
+            if (!ownFriends.Any())
+            {
+                return new List<string>();
+            }
+
+            var sugg = new List<string>();
+
+            var suggUsersId = new HashSet<string>();
+
+            for (int i = 0; i < ownFriendsIds.Count(); i++)
+            {
+                var friendId = ownFriendsIds[i];
+
+                var friendsOfFriends = await GetAllFriendsAsync(friendId);
+
+                for (int j = 0; j < friendsOfFriends.Count(); j++)
+                {
+                    var fr = friendsOfFriends[j];
+                    var potentialFriendId = fr.SenderId == friendId ? fr.ReceiverId : fr.SenderId;
+
+                    if (potentialFriendId == userId)
+                    {
+                        continue;
+                    }
+                    if (ownFriendsIds.Contains(potentialFriendId))
+                    {
+                        continue;
+                    }
+                    if (suggUsersId.Contains(potentialFriendId))
+                    {
+                        continue;
+                    }
+                    suggUsersId.Add(potentialFriendId);
+
+                    //var suggestion = new FriendRequest
+                    //{
+                    //    SenderId = friendId,
+                    //    ReceiverId = potentialFriendId,
+                    //    Status = FriendRequestStatus.Pending,
+                    //    CreatedAt = DateTime.UtcNow
+                    //};
+
+                    // var suggestion = potentialFriendId;
+                    sugg.Add(potentialFriendId);
+
+
+                }
+            }
+            return sugg;
+
+        }
+
+        public async Task<List<FriendDto>> GetFriendSuggDtos(string userId)
+        {
+            var friends = await GetFriendSugg(userId);
+            var fSuggsDtos = new List<FriendDto>();
+
+            if (!friends.Any())
+            {
+                var userFriends = await GetAllFriendsAsync(userId);
+                for(int i = 0; i>userFriends.Count(); i++)
+                {
+                    var s = userFriends[i];
+                    var userFDto = await _userinfoservice.GetUserInfoAsync(s.ReceiverId);
+                    fSuggsDtos[i] = new FriendDto
+                    {
+                        UserId = userFDto.UserId,
+                        Username = userFDto.Username,
+                        DisplayName = userFDto.DisplayName,
+                        AvatarUrl = userFDto.AvatarUrl
+                    };
+                }
+                return fSuggsDtos;
+            }
+            for(int i = 0; i>friends.Count(); i++)
+            {
+                var et = friends[i];
+                var fDto = await _userinfoservice.GetUserInfoAsync(et);
+                    
+                    fSuggsDtos[i] = new FriendDto{
+                        UserId = et,
+                        Username = fDto.Username,
+                        DisplayName = fDto.DisplayName,
+                        AvatarUrl = fDto.AvatarUrl
+                    };
+            }
+
+            return fSuggsDtos;
+        }
+
     }
 }

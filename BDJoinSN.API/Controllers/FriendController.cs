@@ -1,4 +1,5 @@
-﻿using BDJoinSN.Application.Contracts.Persistance;
+﻿using BDJoinSN.Application;
+using BDJoinSN.Application.Contracts.Persistance;
 using BDJoinSN.Application.Exceptions;
 using BDJoinSN.Application.Features.FriendRequests.Commands.AccepFriendsRequest;
 using BDJoinSN.Application.Features.FriendRequests.Commands.CancelFriendRequest;
@@ -331,6 +332,41 @@ namespace BDJoinSN.API.Controllers
             {
                 _logger.LogError(ex, "Error al obtener solicitudes pendientes");
                 return StatusCode(500, new { error = "Error al obtener solicitudes" });
+            }
+        }
+
+        [HttpGet("suggestions")]
+        [ProducesResponseType(typeof(PaginatedResult<FriendDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<PaginatedResult<List<FriendDto>>>> getFriendSuggestions([FromQuery] int pageIndex = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                if (pageIndex < 1)
+                    return BadRequest(new { error = "pageIndex debe ser mayor o igual a 1" });
+
+                if (pageSize < 1 || pageSize > 50)
+                    return BadRequest(new { error = "pageSize debe estar entre 1 y 50" });
+
+                var userId = User.FindFirstValue("uid")
+                    ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? throw new UnauthorizedAccessException("Usuario no autenticado");
+
+                var query = new GetFriendSuggestionsQuery
+                {
+                    Id = userId,
+                    pageIndex = pageIndex,
+                    pageSize = pageSize
+                };
+
+                var result = await _mediator.Send(query);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener solicitudes salientes");
+                return StatusCode(500, new { error = "Error al obtener solicitudes salientes" });
             }
         }
     }

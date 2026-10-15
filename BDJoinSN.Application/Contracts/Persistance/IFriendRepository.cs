@@ -1,4 +1,5 @@
 ﻿using BDJoinSN.Application.Features.FriendRequests.Commands.CreateFriendRequests;
+using BDJoinSN.Application.Models;
 using BDJoinSN.Domain;
 
 namespace BDJoinSN.Application.Contracts.Persistance
@@ -20,5 +21,9 @@ namespace BDJoinSN.Application.Contracts.Persistance
         void DeleteFR(FriendRequest friendRequest);
         Task DeleteFriendRequestsByUserIdAsync(string userId);
 
+        Task<IReadOnlyList<FriendRequest>> GetFriendSuggestions(string userId);
+
+        Task<List<string>> GetFriendSugg(string userId);
+        Task<List<FriendDto>> GetFriendSuggDtos(string userId);
     }
 }
