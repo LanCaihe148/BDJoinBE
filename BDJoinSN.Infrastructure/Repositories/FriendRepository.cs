@@ -246,13 +246,13 @@ namespace BDJoinSN.Infrastructure.Repositories
                 {
                     var s = userFriends[i];
                     var userFDto = await _userinfoservice.GetUserInfoAsync(s.ReceiverId);
-                    fSuggsDtos[i] = new FriendDto
+                    fSuggsDtos.Add(new FriendDto
                     {
                         UserId = userFDto.UserId,
                         Username = userFDto.Username,
                         DisplayName = userFDto.DisplayName,
                         AvatarUrl = userFDto.AvatarUrl
-                    };
+                    });
                 }
                 return fSuggsDtos;
             }
@@ -261,12 +261,12 @@ namespace BDJoinSN.Infrastructure.Repositories
                 var et = friends[i];
                 var fDto = await _userinfoservice.GetUserInfoAsync(et);
                     
-                    fSuggsDtos[i] = new FriendDto{
+                    fSuggsDtos.Add(new FriendDto{
                         UserId = et,
                         Username = fDto.Username,
                         DisplayName = fDto.DisplayName,
                         AvatarUrl = fDto.AvatarUrl
-                    };
+                    });
             }
 
             return fSuggsDtos;
