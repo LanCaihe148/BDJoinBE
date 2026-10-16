@@ -242,7 +242,7 @@ namespace BDJoinSN.Infrastructure.Repositories
             if (!friends.Any())
             {
                 var userFriends = await GetAllFriendsAsync(userId);
-                for(int i = 0; i>userFriends.Count(); i++)
+                for(int i = 0; i<userFriends.Count(); i++)
                 {
                     var s = userFriends[i];
                     var userFDto = await _userinfoservice.GetUserInfoAsync(s.ReceiverId);
@@ -256,7 +256,7 @@ namespace BDJoinSN.Infrastructure.Repositories
                 }
                 return fSuggsDtos;
             }
-            for(int i = 0; i>friends.Count(); i++)
+            for(int i = 0; i<friends.Count(); i++)
             {
                 var et = friends[i];
                 var fDto = await _userinfoservice.GetUserInfoAsync(et);
