@@ -29,11 +29,14 @@ namespace BDJoinSN.Application.Features.Posts.Queries.GetPostsByFriend
             {
                 
                 var friendIds = await GetFriendIdsAsync(request.UserId);
+                var friendsOffriends = await _unitOfWork.FriendRepository.GetFriendSugg(request.UserId);
 
-                if (!friendIds.Any())
+
+                if (!friendIds.Any() || !friendsOffriends.Any())
                 {
                     var minePosts = await _unitOfWork.PostRepository.GetAsync(p => p.UserId == request.UserId);
                     var mPostCount = await _unitOfWork.PostRepository.CountOwnPosts(request.UserId);
+                    //var ePostCount = await _unitOfWork.ProfileRepository.CountProfilesAsync();
 
                     var totalOwnPostsPages = (int)Math.Ceiling((double)mPostCount / request.PageSize);
                     var mPostDtos = _mapper.Map<List<PostDto>>(minePosts);
@@ -51,20 +54,17 @@ namespace BDJoinSN.Application.Features.Posts.Queries.GetPostsByFriend
                 }
 
                 
-                var totalCount = await _unitOfWork.PostRepository.GetFeedCountAsync(friendIds, request.UserId);
-
+                var totalCount = await _unitOfWork.PostRepository.GetFeedCountAsync(friendsOffriends, friendIds, request.UserId);
+                //var toa = await _unitOfWork.PostRepository.GetFeedCountAsync(friendsOffriends, request.UserId);
                 
                 var posts = await _unitOfWork.PostRepository.GetFeedAsync(
+                    friendsOffriends,
                     friendIds,
                     request.UserId,
                     request.PageIndex,
                     request.PageSize);
-
-
-               
                 
                 var postDtos = _mapper.Map<List<PostDto>>(posts);
-
                 
                 var totalPages = (int)Math.Ceiling((double)totalCount / request.PageSize);
 

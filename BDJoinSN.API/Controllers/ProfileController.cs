@@ -56,8 +56,7 @@ namespace BDJoinSN.API.Controllers
             return Ok(updatedProfile);
         }
 
-        [HttpGet("{username}")]
-        
+        [HttpGet("{username}")] 
         [ProducesResponseType(typeof(PublicProfileResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PublicProfileResponse>> GetPublicProfile(string username)

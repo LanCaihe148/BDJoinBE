@@ -10,7 +10,6 @@ namespace BDJoinSN.Application.Contracts.Persistance
         Task<bool> ExistsByUserIdAsync(string userId);
         Task UpdateProfileImageAsync(string userId, string imageUrl);
         Task UpdateDisplayNameAsync(string userId, string displayName);
-
         Task<UserInfoDto> GetUserInfoByIdAsync(string userId);
         Task<bool> DeleteProfile(string userId);
     }

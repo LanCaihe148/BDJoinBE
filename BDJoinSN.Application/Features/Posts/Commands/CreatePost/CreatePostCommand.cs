@@ -6,8 +6,6 @@ namespace BDJoinSN.Application.Features.Posts.Commands.CreatePost
     {
         public string? UserId { get; set; }
         public string? Author { get; set; }
-
-        //public string? UserName { get; set; }
         public string? Content { get; set; }
 
     }

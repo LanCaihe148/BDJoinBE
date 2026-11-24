@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace BDJoinSN.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("Api/[controller]")]
     [Authorize]
     public class FeedController : ControllerBase
     {
