@@ -1,5 +1,4 @@
 ﻿using BDJoinSN.Application.Contracts.Identity;
-using BDJoinSN.Application.Contracts.Persistance;
 using BDJoinSN.Application.Features.Users.Queries.SearchUsersQuery;
 using BDJoinSN.Application.Models;
 using BDJoinSN.Application.Models.Identity;

@@ -1,5 +1,5 @@
 ﻿using BDJoinSN.Application.Models.Identity;
-using BDJoinSN.Application.Models.Pagination;
+
 
 namespace BDJoinSN.Application.Contracts.Identity
 {

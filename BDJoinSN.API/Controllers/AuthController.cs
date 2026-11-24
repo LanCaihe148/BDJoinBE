@@ -5,7 +5,6 @@ using BDJoinSN.Application.Models.Identity;
 using BDJoinSN.Identity.Features.Auth.Commands.ChangePassword;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -35,24 +34,38 @@ namespace BDJoinSN.API.Controllers
         [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
         public async Task<ActionResult<AuthResponse>> Login([FromBody] AuthRequest request)
         {
-            var response = await _authService.Login(request);
-            return Ok(response);
+            try
+            {
+                var response = await _authService.Login(request);
+                
+                return Ok(response);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error al Intentar loggear");
+                return StatusCode(500, new { error = "Error al procesar el loggeo"});
+            }
+            
         }
 
         [HttpPost("Register")]
         [ProducesResponseType(typeof(RegistrationResponse), StatusCodes.Status200OK)]
         public async Task<ActionResult<RegistrationResponse>> Register([FromBody] RegistrationRequest request)
         {
+
+            try
+            {
+                
             var response = await _authService.Register(request);
 
-            //await _profileCreationService.CreateProfileAsync(
-            //    response.UserId,
-            //    request.Name,
-            //    request.Lastname,
-            //    request.DisplayName,
-            //    request.Username
-            //);
-            return Ok(response);
+            return Ok(response);                
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("Error al intentar registrarse");
+                return StatusCode(500, new { error = "Error al procesar la solicitud de registro"});
+            }
+
         }
 
 

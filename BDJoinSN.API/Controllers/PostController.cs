@@ -1,5 +1,4 @@
-﻿using BDJoinSN.Application.Contracts.Persistance;
-using BDJoinSN.Application.Exceptions;
+﻿using BDJoinSN.Application.Exceptions;
 using BDJoinSN.Application.Features.Posts.Commands.CreatePost;
 using BDJoinSN.Application.Features.Posts.Commands.DeletePost;
 using BDJoinSN.Application.Features.Posts.Commands.UpdatePost;
